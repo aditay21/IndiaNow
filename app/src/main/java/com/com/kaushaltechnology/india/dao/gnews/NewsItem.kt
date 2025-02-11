@@ -16,5 +16,6 @@ data class NewsItem(
     @ColumnInfo(name = "image") @SerializedName("image") val image: String?, @ColumnInfo(name = "category") @SerializedName("category") val category: String,
     @ColumnInfo(name = "language") @SerializedName("language") val language: String,
     @ColumnInfo(name = "country") @SerializedName("country") val country: String,
-    @ColumnInfo(name = "published_at") @SerializedName("published_at") val publishedAt: String
+    @ColumnInfo(name = "published_at") @SerializedName("published_at") val publishedAt: String,
+    @ColumnInfo(name = "seen") @SerializedName("seen") val seen: Boolean = false
 )

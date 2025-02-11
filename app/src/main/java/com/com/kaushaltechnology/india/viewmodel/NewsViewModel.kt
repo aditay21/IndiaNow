@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class NewsViewModel @Inject constructor(private val repository: NewsRepository) : ViewModel() {
 
@@ -19,7 +20,11 @@ class NewsViewModel @Inject constructor(private val repository: NewsRepository) 
     private val _errorStateFlow = MutableStateFlow<String?>(null)
     val errorStateFlow: StateFlow<String?> = _errorStateFlow
 
-    fun fetchNews() {
+    init {
+        fetchNews()
+    }
+
+    private fun fetchNews() {
         viewModelScope.launch {
             repository.fetchNews().collect { response ->
                 if (response.isSuccessful) {

@@ -25,6 +25,7 @@ class NewsViewModel @Inject constructor(private val repository: NewsRepository) 
     }
 
     private fun fetchNews() {
+
         viewModelScope.launch {
             repository.fetchNews().collect { response ->
                 if (response.isSuccessful) {
@@ -35,4 +36,5 @@ class NewsViewModel @Inject constructor(private val repository: NewsRepository) 
             }
         }
     }
+
 }

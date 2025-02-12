@@ -70,7 +70,9 @@ dependencies {
     kapt ("com.google.dagger:hilt-android-compiler:2.50")
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
-    implementation(libs.coil.compose)
+    implementation (libs.glide)
+    kapt ("com.github.bumptech.glide:compiler:4.16.0")
+    implementation (libs.landscapist.glide) // Glide wrapper for Compose
 }
 kapt {
     correctErrorTypes = true

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.com.kaushaltechnology.india.Utils
 import com.com.kaushaltechnology.india.screens.NewsCard
 import com.com.kaushaltechnology.india.screens.SourceAndTimeView
+import com.com.kaushaltechnology.india.utils.TimeUtils
 import com.com.kaushaltechnology.india.viewmodel.NewsViewModel
 import kotlinx.coroutines.launch
 
@@ -173,7 +174,7 @@ fun MainScreen(viewModel: NewsViewModel) {
                                             ?.let {
                                                 SourceAndTimeView(
                                                     source = it.source.name,
-                                                    time = Utils.getTimeZone(it.publishedAt)
+                                                    time = TimeUtils.formatDateTime(it.publishedAt)
                                                 )
                                             }
                                     }

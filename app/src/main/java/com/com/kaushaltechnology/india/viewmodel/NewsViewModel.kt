@@ -3,6 +3,7 @@ package com.com.kaushaltechnology.india.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.com.kaushaltechnology.india.dao.gnews.Article
 import com.com.kaushaltechnology.india.dao.gnews.NewsResponse
 import com.com.kaushaltechnology.india.repositiory.NewsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,6 +36,10 @@ class NewsViewModel @Inject constructor(private val repository: NewsRepository) 
                 }
             }
         }
+    }
+
+    fun markArticleAsRead(article: Article) {
+        repository.markArticleAsRead(article) // Update the read status in the DB
     }
 
 }

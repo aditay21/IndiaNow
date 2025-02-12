@@ -23,10 +23,14 @@ interface NewsDao {
     @Query("SELECT * FROM news WHERE id = :newsId")
     suspend fun getNewsById(newsId: Long): Article?
 
-    @Query("SELECT * FROM news WHERE seen = 0")
-    suspend fun getPendingNews(): List<Article> // Fetch news where `seen = false`
+    @Query("""
+    SELECT * FROM news 
+    WHERE read = 0  -- Fetch only unread news
+    AND published_at >= datetime('now', '-1 days')  -- Exclude news older than 2 days
+    ORDER BY published_at DESC
+""")
+    suspend fun getDisplayArticls(): List<Article> // Fetch unread news sorted by published date
 
-    // Removed the `seen` parameter since it's already defined in the query
-    @Query("SELECT * FROM news WHERE seen = 0 ORDER BY published_at DESC")
-    suspend fun getNewsBySeen(): List<Article> // Fetch unread news sorted by published date
+    @Query("UPDATE news SET read = 1 WHERE id = :articleId")
+    suspend fun updateReadStatus(articleId: Long, read: Int = 1)
 }

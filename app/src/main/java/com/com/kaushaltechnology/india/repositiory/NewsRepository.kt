@@ -19,7 +19,7 @@ class NewsRepository @Inject constructor(
     // Fetch News from either the local database (if pending) or from the API
     fun fetchNews(): Flow<Response<NewsResponse>> = flow {
         // First check if there are any pending news items (i.e., seen = false)
-        val pendingNews = newsDao.getPendingNews() // Fetch only the pending news (seen = false)
+        val pendingNews = newsDao.getDisplayArticls() // Fetch only the pending news (seen = false)
 
         if (pendingNews.isNotEmpty()) {
             // Emit the pending news from the database if any
@@ -36,8 +36,12 @@ class NewsRepository @Inject constructor(
             )
             if (response.isSuccessful) {
                 response.body()?.articles?.let { articles ->
-                    newsDao.deleteAllNews()  // Clear old data
-                    newsDao.insertAll(articles)  // Save new data
+                    // Convert publishedAt format before saving
+                    val formattedArticles = articles.map { article ->
+                        article.copy(publishedAt = article.getFormattedPublishedAt())
+                    }
+
+                    newsDao.insertAll(formattedArticles)  // Save new data
                 }
             }
             emit(response)
@@ -47,6 +51,12 @@ class NewsRepository @Inject constructor(
     // Get news from Room
     fun getLocalNews(): Flow<List<Article>> = flow {
         emit(newsDao.getAllNews())
+    }
+
+    suspend fun markArticleAsRead(article: Article) {
+        article.id?.let { articleId ->
+            newsDao.updateReadStatus(articleId, 1) // Update the read status in the DB
+        }
     }
 
     // Check for pending news with seen = false

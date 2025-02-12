@@ -6,6 +6,10 @@ import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import com.google.gson.annotations.SerializedName
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 @Entity(tableName = "news")
 data class Article(
@@ -16,8 +20,20 @@ data class Article(
     @SerializedName("image") @ColumnInfo(name = "url_to_image") val urlToImage: String?,
     @SerializedName("publishedAt") @ColumnInfo(name = "published_at") val publishedAt: String,
     @Embedded val source: Source,
-    @ColumnInfo(name = "seen") val seen: Boolean = false
+    @ColumnInfo(name = "read") val read: Boolean = false
+){
+    fun getFormattedPublishedAt(): String {
+        return try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC") // Set input format timezone
+            val date = inputFormat.parse(publishedAt)
 
-)
+            val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            outputFormat.format(date ?: Date()) // Return formatted date
+        } catch (e: Exception) {
+            publishedAt // Return original if parsing fails
+        }
+    }
+}
 
 

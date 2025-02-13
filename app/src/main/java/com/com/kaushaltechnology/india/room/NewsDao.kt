@@ -23,14 +23,26 @@ interface NewsDao {
     @Query("SELECT * FROM news WHERE id = :newsId")
     suspend fun getNewsById(newsId: Long): Article?
 
-    @Query("""
-    SELECT * FROM news 
+    @Query(
+        """
+    SELECT DISTINCT * FROM news 
     WHERE read = 0  -- Fetch only unread news
-    AND published_at >= datetime('now', '-1 days')  -- Exclude news older than 2 days
+    AND published_at >= datetime('now', '-1 days')  -- Exclude news older than 1 day
     ORDER BY published_at DESC
-""")
+"""
+    )
     suspend fun getDisplayArticls(): List<Article> // Fetch unread news sorted by published date
 
-    @Query("UPDATE news SET read = 1 WHERE id = :articleId")
-    suspend fun updateReadStatus(articleId: Long, read: Int = 1)
+
+    @Query("UPDATE news SET read = :isRead WHERE id = :articleId")
+    suspend fun updateReadStatus(articleId: Long, isRead: Boolean)
+
+    @Query(
+        """
+    SELECT * FROM news 
+    WHERE url_to_image = :imageUrl
+"""
+    )
+    suspend fun getArticleByImageUrl(imageUrl: String): Article?
+
 }

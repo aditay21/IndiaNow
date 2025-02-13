@@ -71,8 +71,9 @@ dependencies {
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
     implementation (libs.glide)
-    kapt ("com.github.bumptech.glide:compiler:4.16.0")
+    kapt (libs.compiler)
     implementation (libs.landscapist.glide) // Glide wrapper for Compose
+    implementation(libs.logging.interceptor)
 }
 kapt {
     correctErrorTypes = true

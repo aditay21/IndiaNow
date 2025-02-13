@@ -1,7 +1,7 @@
 package com.com.kaushaltechnology.india
 
 
-import MainScreen
+import com.com.kaushaltechnology.india.screens.MainScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

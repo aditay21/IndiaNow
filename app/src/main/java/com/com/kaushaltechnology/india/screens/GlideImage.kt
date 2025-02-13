@@ -30,3 +30,4 @@ fun GlideImage(imageUrl: String, thumbnailResId: Int) {
         }
     )
 }
+//https://images.icc-cricket.com/image/upload/t_ratio16_9-size40/prd/dnk795hdoabawciobbzj

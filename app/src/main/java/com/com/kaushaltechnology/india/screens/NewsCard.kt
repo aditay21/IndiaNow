@@ -30,8 +30,6 @@ fun NewsCard(imageUrl: String) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            // Load image from URL using Coil
-            Log.e("TAG","imageUrl $imageUrl")
             GlideImage(imageUrl, R.drawable.no_camera)
         }
     }

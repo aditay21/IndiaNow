@@ -1,3 +1,6 @@
+package com.com.kaushaltechnology.india.screens
+
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,8 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.com.kaushaltechnology.india.Utils
-import com.com.kaushaltechnology.india.screens.NewsCard
-import com.com.kaushaltechnology.india.screens.SourceAndTimeView
 import com.com.kaushaltechnology.india.utils.TimeUtils
 import com.com.kaushaltechnology.india.viewmodel.NewsViewModel
 import kotlinx.coroutines.launch
@@ -29,11 +30,28 @@ fun MainScreen(viewModel: NewsViewModel) {
 
     val newsResponse by viewModel.newsStateFlow.collectAsState()
     val errorState by viewModel.errorStateFlow.collectAsState()
-    val isLoading = newsResponse == null // Adjust this based on your actual loading state
+    val isLoading = false // Adjust this based on your actual loading state
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val pagerState = rememberPagerState(pageCount = { newsResponse?.articles?.size ?: 1 })
+    val pagerState = rememberPagerState(pageCount = { newsResponse.articles.size })
     val scope = rememberCoroutineScope()
+
+    // **✅ Observe page change and update read status**
+    LaunchedEffect(pagerState.currentPage) {
+        newsResponse.articles.getOrNull(pagerState.currentPage)?.let { article ->
+            if (!article.read) { // If the article is unread
+                viewModel.markArticleAsRead(article) // Update database
+            }
+        }
+
+        // Check if the current page is the second-to-last, and trigger the API call for next page
+        val lastItemIndex = newsResponse.articles.size.minus(1)
+        if (newsResponse.articles.size>0 && pagerState.currentPage >= lastItemIndex) {
+            // Trigger fetching the next page if at the second-to-last or last item
+             Log.e("TAG","LastItemIndex  $lastItemIndex   Page  ${newsResponse.page} ")
+            newsResponse.page.let { viewModel.callNextPage(it) }
+        }
+    }
 
     // Drawer Layout
     ModalNavigationDrawer(
@@ -76,9 +94,12 @@ fun MainScreen(viewModel: NewsViewModel) {
                         color = Color.Red,
                         fontWeight = FontWeight.Bold
                     )
-                } else if (newsResponse?.articles.isNullOrEmpty()) {
+                } else if (newsResponse.articles.isEmpty()) {
                     Text("No news available", modifier = Modifier.align(Alignment.CenterHorizontally))
                 } else {
+                    if (pagerState.currentPage==0 && newsResponse.articles.size>0){
+                        viewModel.markArticleAsRead(newsResponse.articles[0])
+                    }
                     // Vertical Pager
                     Box(modifier = Modifier.weight(1f)) {
                         VerticalPager(
@@ -115,7 +136,7 @@ fun MainScreen(viewModel: NewsViewModel) {
                                                 modifier = Modifier.fillMaxSize(),
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                newsResponse?.articles?.get(page)?.urlToImage?.let { NewsCard(imageUrl = it) }
+                                                newsResponse.articles[page].urlToImage?.let { NewsCard(imageUrl = it) }
                                             }
                                         }
                                     }
@@ -133,12 +154,12 @@ fun MainScreen(viewModel: NewsViewModel) {
                                             verticalArrangement = Arrangement.spacedBy(8.dp) // Space between title and description
                                         ) {
                                             // Title Text (with ellipsis at the end)
-                                            Text(text = newsResponse?.articles?.get(page)?.title?.let {
-                                                Utils.replaceSpecialChar(
-                                                    it
+                                            Text(
+                                                text = newsResponse.articles[page].let {
+                                                it.id.toString()+""+Utils.replaceSpecialChar(
+                                                    it.title
                                                 )
-                                            }
-                                                ?: "Title not available",
+                                            },
                                                 fontSize = 20.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 color = Color.Black,
@@ -149,11 +170,11 @@ fun MainScreen(viewModel: NewsViewModel) {
 
                                             // Description Text
                                             Text(
-                                                text = newsResponse?.articles?.get(page)?.description?.let {
+                                                text = newsResponse.articles[page].description.let {
                                                     Utils.replaceSpecialChar(
                                                         it
                                                     )
-                                                } ?: "Details are not available yet!!",
+                                                },
                                                 fontSize = 20.sp,
                                                 color = Color.Gray,
                                                 overflow = TextOverflow.Ellipsis,
@@ -170,8 +191,8 @@ fun MainScreen(viewModel: NewsViewModel) {
                                             .weight(0.2f),
                                         contentAlignment = Alignment.TopCenter
                                     ) {
-                                        newsResponse?.articles?.get(page)
-                                            ?.let {
+                                        newsResponse.articles[page]
+                                            .let {
                                                 SourceAndTimeView(
                                                     source = it.source.name,
                                                     time = TimeUtils.formatDateTime(it.publishedAt)
@@ -193,14 +214,12 @@ fun MainScreen(viewModel: NewsViewModel) {
 // Drawer Content
 @Composable
 fun DrawerContent(onCloseDrawer: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    Column(modifier = with(Modifier) {
+        fillMaxSize()
+            .padding(16.dp)
+    }, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(text = "Navigation", fontSize = 22.sp, fontWeight = FontWeight.Bold)
-        Divider()
+        HorizontalDivider()
         TextButton(onClick = onCloseDrawer) { Text("Close Drawer") }
     }
 }
@@ -208,5 +227,5 @@ fun DrawerContent(onCloseDrawer: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewMainScreen() {
-//    MainScreen()
+//    com.com.kaushaltechnology.india.screens.MainScreen()
 }

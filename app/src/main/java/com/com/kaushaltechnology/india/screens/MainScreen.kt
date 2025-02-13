@@ -1,18 +1,26 @@
 package com.com.kaushaltechnology.india.screens
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.com.kaushaltechnology.india.viewmodel.NewsViewModel
 import kotlinx.coroutines.launch
@@ -24,10 +32,10 @@ fun MainScreen(viewModel: NewsViewModel) {
     val errorState by viewModel.errorStateFlow.collectAsState()
     val isLoading by remember { mutableStateOf(viewModel.isLoading) }
     val showShimmerEffect by viewModel.showShimmerEffect.collectAsState()
-
+    val context = LocalContext.current
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
+    var showButton by remember { mutableStateOf(false) }
     // **✅ Add 1 extra page for error state**
     val pagerState = rememberPagerState(
         pageCount = { newsResponse.articles.size + if (errorState != null) 1 else 0 }
@@ -82,11 +90,11 @@ fun MainScreen(viewModel: NewsViewModel) {
                 when {
                     showShimmerEffect -> {
                         // Show shimmer effect when loading
-                        Log.e("TAG","firstTimeLoading "+showShimmerEffect)
+                        Log.e("TAG", "firstTimeLoading $showShimmerEffect")
                         ShimmerEffect()
                     }
+
                     else -> {
-                        Log.e("TAG","else"+showShimmerEffect)
                         Box(modifier = Modifier.weight(1f)) {
                             VerticalPager(
                                 state = pagerState,
@@ -96,7 +104,7 @@ fun MainScreen(viewModel: NewsViewModel) {
                                     if (page == 0) {
                                         viewModel.markArticleAsRead(newsResponse.articles[0])
                                     }
-                                    NewsItem(newsResponse.articles[page],pagerState)
+                                    NewsItem(newsResponse.articles[page], pagerState)
                                 } else if (errorState != null) {
                                     // **✅ Display error as last item**
                                     ErrorScreen(errorState!!) { viewModel.fetchNews() }
@@ -109,6 +117,7 @@ fun MainScreen(viewModel: NewsViewModel) {
         }
     }
 }
+
 
 // Shimmer Effect Composable
 

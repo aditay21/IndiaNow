@@ -1,0 +1,111 @@
+package com.com.kaushaltechnology.india.screens
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.com.kaushaltechnology.india.Utils
+import com.com.kaushaltechnology.india.dao.gnews.Article
+import com.com.kaushaltechnology.india.utils.TimeUtils
+
+@Composable
+fun NewsItem(article: Article) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(2.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Card with 40% height
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.3f)
+                    .padding(16.dp)
+            ) {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF6200EE)
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp) // Height of the card
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        article.urlToImage?.let { NewsCard(imageUrl = it) }
+                    }
+                }
+            }
+
+            // Text with 60% height
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.5f) // 60% height
+                    .padding(16.dp),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp) // Space between title and description
+                ) {
+                    // Title Text
+                    Text(
+                        text = "${article.id} ${Utils.replaceSpecialChar(article.title)}",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Description Text
+                    Text(
+                        text = Utils.replaceSpecialChar(article.description),
+                        fontSize = 20.sp,
+                        color = Color.Gray,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
+            // Source & Time
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 0.dp, 0.dp, 0.dp)
+                    .weight(0.2f),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                SourceAndTimeView(
+                    source = article.source.name,
+                    time = TimeUtils.formatDateTime(article.publishedAt)
+                )
+            }
+        }
+    }
+}

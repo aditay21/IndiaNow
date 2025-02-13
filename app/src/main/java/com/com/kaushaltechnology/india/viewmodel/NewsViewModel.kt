@@ -1,14 +1,18 @@
 package com.com.kaushaltechnology.india.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.com.kaushaltechnology.india.dao.gnews.Article
 import com.com.kaushaltechnology.india.dao.gnews.DisplayList
 import com.com.kaushaltechnology.india.repositiory.NewsRepository
 import com.com.kaushaltechnology.india.utils.NetworkHelper
-
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -20,6 +24,7 @@ class NewsViewModel @Inject constructor(
 ) : ViewModel() {
 
     var isLoading = false
+
 
     // StateFlow for holding the list of articles
     private val _displayItemList = MutableStateFlow(
@@ -35,6 +40,9 @@ class NewsViewModel @Inject constructor(
     private val _isInternetAvailable = MutableStateFlow(true)
     val isInternetAvailable: StateFlow<Boolean> = _isInternetAvailable
 
+    private var _showShimmerEffect = MutableStateFlow(true)
+    val showShimmerEffect: StateFlow<Boolean> = _showShimmerEffect
+
     init {
         fetchNews()
     }
@@ -42,6 +50,8 @@ class NewsViewModel @Inject constructor(
     // Fetch news and update state
     fun fetchNews() {
         viewModelScope.launch {
+            _showShimmerEffect.value  = true
+            delay(500)
             if (!checkInternetConnection()) {
                 _isInternetAvailable.value = false
                 _errorStateFlow.value = "No Internet Connection"
@@ -53,6 +63,7 @@ class NewsViewModel @Inject constructor(
 
             repository.fetchNews().collect { result ->
                 result.onSuccess { newsResponse ->
+
                     _displayItemList.update { currentList ->
                         currentList.copy(
                             status = newsResponse.status,
@@ -65,6 +76,9 @@ class NewsViewModel @Inject constructor(
                     handleError(exception)
                 }
             }
+            _showShimmerEffect.value  = false
+            Log.e("TAG","isloading false")
+
         }
     }
 

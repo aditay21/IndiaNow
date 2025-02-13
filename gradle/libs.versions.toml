@@ -19,6 +19,7 @@ loggingInterceptor = "4.10.0"
 retrofit = "2.9.0"
 roomRuntime = "2.6.1"
 firebaseCrashlyticsBuildtools = "3.0.3"
+shimmer = "0.5.0"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPagerIndicators" }
@@ -49,6 +50,7 @@ landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version.
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
+shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

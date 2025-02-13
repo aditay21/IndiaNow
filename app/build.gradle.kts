@@ -74,6 +74,7 @@ dependencies {
     kapt (libs.compiler)
     implementation (libs.landscapist.glide) // Glide wrapper for Compose
     implementation(libs.logging.interceptor)
+    implementation (libs.shimmer)
 }
 kapt {
     correctErrorTypes = true

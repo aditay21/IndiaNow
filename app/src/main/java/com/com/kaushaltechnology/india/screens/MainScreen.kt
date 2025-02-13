@@ -39,17 +39,15 @@ fun MainScreen(viewModel: NewsViewModel) {
     // **✅ Observe page change and update read status**
     LaunchedEffect(pagerState.currentPage) {
         newsResponse.articles.getOrNull(pagerState.currentPage)?.let { article ->
-            if (!article.read) { // If the article is unread
-                viewModel.markArticleAsRead(article) // Update database
+            if (!article.read) {
+                viewModel.markArticleAsRead(article)
             }
         }
 
-        // Check if the current page is the second-to-last, and trigger the API call for next page
-        val lastItemIndex = newsResponse.articles.size.minus(1)
-        if (newsResponse.articles.size>0 && pagerState.currentPage >= lastItemIndex) {
-            // Trigger fetching the next page if at the second-to-last or last item
-             Log.e("TAG","LastItemIndex  $lastItemIndex   Page  ${newsResponse.page} ")
-            newsResponse.page.let { viewModel.callNextPage(it) }
+        val lastItemIndex = newsResponse.articles.size - 1
+        if (pagerState.currentPage >= lastItemIndex && !viewModel.isLoading) {
+            Log.e("TAG", "LastItemIndex: $lastItemIndex, Page: ${newsResponse.page}")
+            viewModel.callNextPage(newsResponse.page)
         }
     }
 

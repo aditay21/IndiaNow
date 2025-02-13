@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NewsViewModel @Inject constructor(private val repository: NewsRepository) : ViewModel() {
 
-    private var isLoading = false
+    var isLoading = false
 
     // StateFlow for holding the list of articles
     private val _displayItemList = MutableStateFlow<DisplayList>(DisplayList(status = "", totalResults = 0, articles = mutableListOf(), page = 0))

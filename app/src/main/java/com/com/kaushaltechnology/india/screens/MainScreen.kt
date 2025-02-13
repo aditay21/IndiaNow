@@ -96,7 +96,7 @@ fun MainScreen(viewModel: NewsViewModel) {
                                     if (page == 0) {
                                         viewModel.markArticleAsRead(newsResponse.articles[0])
                                     }
-                                    NewsItem(newsResponse.articles[page])
+                                    NewsItem(newsResponse.articles[page],pagerState)
                                 } else if (errorState != null) {
                                     // **✅ Display error as last item**
                                     ErrorScreen(errorState!!) { viewModel.fetchNews() }

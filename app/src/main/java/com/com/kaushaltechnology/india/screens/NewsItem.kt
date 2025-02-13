@@ -1,5 +1,6 @@
 package com.com.kaushaltechnology.india.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,8 +25,9 @@ import com.com.kaushaltechnology.india.Utils
 import com.com.kaushaltechnology.india.dao.gnews.Article
 import com.com.kaushaltechnology.india.utils.TimeUtils
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NewsItem(article: Article) {
+fun NewsItem(article: Article,pagerState: PagerState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +67,7 @@ fun NewsItem(article: Article) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.5f) // 60% height
-                    .padding(16.dp),
+                    .padding(16.dp, 16.dp, 16.dp, 2.dp),
                 contentAlignment = Alignment.TopCenter
             ) {
                 Column(
@@ -97,13 +100,14 @@ fun NewsItem(article: Article) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 0.dp, 0.dp, 0.dp)
+                    .padding(1.dp, 0.dp, 0.dp, 0.dp)
                     .weight(0.2f),
                 contentAlignment = Alignment.TopCenter
             ) {
                 SourceAndTimeView(
                     source = article.source.name,
-                    time = TimeUtils.formatDateTime(article.publishedAt)
+                    time = TimeUtils.formatDateTime(article.publishedAt),
+                    pagerState
                 )
             }
         }

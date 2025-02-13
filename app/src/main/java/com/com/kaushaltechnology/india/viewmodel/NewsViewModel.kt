@@ -36,10 +36,6 @@ class NewsViewModel @Inject constructor(
     private val _errorStateFlow = MutableStateFlow<String?>(null)
     val errorStateFlow: StateFlow<String?> = _errorStateFlow.asStateFlow()
 
-    // StateFlow to track internet availability
-    private val _isInternetAvailable = MutableStateFlow(true)
-    val isInternetAvailable: StateFlow<Boolean> = _isInternetAvailable
-
     private var _showShimmerEffect = MutableStateFlow(true)
     val showShimmerEffect: StateFlow<Boolean> = _showShimmerEffect
 
@@ -53,12 +49,9 @@ class NewsViewModel @Inject constructor(
             _showShimmerEffect.value  = true
             delay(500)
             if (!checkInternetConnection()) {
-                _isInternetAvailable.value = false
                 _errorStateFlow.value = "No Internet Connection"
                 return@launch
             }
-
-            _isInternetAvailable.value = true
             _errorStateFlow.value = null
 
             repository.fetchNews().collect { result ->
@@ -89,12 +82,10 @@ class NewsViewModel @Inject constructor(
         }
 
         if (!checkInternetConnection()) {
-            _isInternetAvailable.value = false
             _errorStateFlow.value = "No Internet Connection"
             return
         }
 
-        _isInternetAvailable.value = true
         _errorStateFlow.value = null
         isLoading = true
         viewModelScope.launch {

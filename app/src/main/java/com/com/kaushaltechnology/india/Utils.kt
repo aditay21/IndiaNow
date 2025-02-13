@@ -1,5 +1,8 @@
 package com.com.kaushaltechnology.india
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -20,7 +23,5 @@ class Utils {
         fun replaceSpecialChar(text: String): String {
             return text.replace("&#039;", "")
         }
-
-
     }
 }

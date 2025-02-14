@@ -19,7 +19,7 @@ fun NewsCard(imageUrl: String) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF6200EE)
+
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -29,7 +29,7 @@ fun NewsCard(imageUrl: String) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            GlideImage(imageUrl, R.drawable.no_camera)
+            GlideImage(imageUrl)
         }
     }
 }

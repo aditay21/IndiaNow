@@ -30,17 +30,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.kaushaltechnology.india.viewmodel.NewsViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun MainScreen(viewModel: NewsViewModel) {
+fun MainScreen(viewModel: NewsViewModel,navController: NavController?) {
     val newsResponse by viewModel.newsStateFlow.collectAsState()
     val errorState by viewModel.errorStateFlow.collectAsState()
     val showShimmerEffect by viewModel.showShimmerEffect.collectAsState()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
 
     // **✅ Add 1 extra page for error state**
     val pagerState = rememberPagerState(
@@ -75,7 +77,11 @@ fun MainScreen(viewModel: NewsViewModel) {
                     .background(Color.White)
                     .padding(16.dp)
             ) {
-                DrawerContent(onCloseDrawer = { scope.launch { drawerState.close() } })
+                DrawerContent(navController = navController) {
+                    scope.launch {
+                        drawerState.close()
+                    }
+                }
             }
         }
     ) {

@@ -8,11 +8,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import com.kaushaltechnology.india.ui.theme.IndiaNowTheme
+import com.kaushaltechnology.india.utils.NetworkHelper
 import com.kaushaltechnology.india.viewmodel.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
 
     private val newsViewModel: NewsViewModel by viewModels()
 
@@ -21,7 +24,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             IndiaNowTheme {
-               MainScreen(newsViewModel)
+               MainScreen(viewModel = newsViewModel)
             }
         }
     }

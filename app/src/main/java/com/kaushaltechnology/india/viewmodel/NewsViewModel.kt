@@ -48,6 +48,7 @@ class NewsViewModel @Inject constructor(
             delay(500)
             if (!checkInternetConnection()) {
                 _errorStateFlow.value = AppError.NO_INTERNET.code
+                _showShimmerEffect.value = false
                 return@launch
             }
             _errorStateFlow.value = null

@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- For Android 13 and above -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- For Android 12 and below -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
 
     <application
-        android:name="com.com.kaushaltechnology.india.NewsApplication"
+        android:name="com.kaushaltechnology.india.NewsApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -24,7 +20,7 @@
         android:theme="@style/Theme.IndiaNow"
         tools:targetApi="31">
         <activity
-            android:name="com.com.kaushaltechnology.india.MainActivity"
+            android:name="com.kaushaltechnology.india.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.IndiaNow">
             <intent-filter>
@@ -33,11 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <provider
-            android:name="com.com.kaushaltechnology.india.MyContentProvider"
-            android:authorities="com.com.kaushaltechnology.in.provider"
-            android:exported="false"
-            android:enabled="true" />
 
     </application>
 

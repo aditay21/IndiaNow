@@ -5,6 +5,7 @@ import com.kaushaltechnology.india.dao.gnews.Article
 import com.kaushaltechnology.india.dao.gnews.NewsResponse
 import com.kaushaltechnology.india.network.NewsApiService
 import com.kaushaltechnology.india.room.NewsDao
+import com.kaushaltechnology.india.utils.ApiError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -108,15 +109,11 @@ class NewsRepository @Inject constructor(
     }
 
     // Handle API errors
+// Handle API errors using ApiError enum
     private fun handleApiError(code: Int): String {
-        return when (code) {
-            400 -> "Bad Request: Your request is invalid."
-            401 -> "Unauthorized: Invalid API key."
-            403 -> "Forbidden: You have reached your daily quota. Reset at 00:00 UTC."
-            429 -> "Too Many Requests: Slow down! You're exceeding the rate limit."
-            500 -> "Server Error: Something went wrong on the server."
-            503 -> "Service Unavailable: Server is down for maintenance. Try again later."
-            else -> "Unknown error occurred. Please try again."
-        }
+        val apiError = ApiError.fromCode(code)
+        return apiError.message
     }
 }
+
+

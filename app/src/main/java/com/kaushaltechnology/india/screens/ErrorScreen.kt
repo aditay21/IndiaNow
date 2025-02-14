@@ -14,24 +14,38 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kaushaltechnology.india.utils.AppError
 
-// Error Screen Composable to show when there is an error
+// Main Error Screen Composable that combines both the message and the button
 @Composable
-fun ErrorScreen(errorMessage: String, onRetry: () -> Unit) {
+fun ErrorScreen(errorCode: Int, onRetry: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Error: $errorMessage",
-            color = Color.Red,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp
-        )
+        val errorMessage = AppError.getMessageFromCode(errorCode)  // Get the error message based on the exception
+        ErrorMessage(errorMessage)
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = onRetry) {
-            Text("Retry")
-        }
+        RetryButton(onRetry = onRetry)
+    }
+}
+
+// Reusable Error Message Composable
+@Composable
+fun ErrorMessage(errorMessage: String) {
+    Text(
+        text = "Error: $errorMessage",
+        color = Color.Red,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp
+    )
+}
+
+// Reusable Retry Button Composable
+@Composable
+fun RetryButton(onRetry: () -> Unit) {
+    Button(onClick = onRetry) {
+        Text("Retry")
     }
 }

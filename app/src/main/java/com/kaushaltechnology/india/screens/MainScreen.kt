@@ -28,7 +28,7 @@ fun MainScreen(viewModel: NewsViewModel) {
     val context = LocalContext.current
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var showButton by remember { mutableStateOf(false) }
+
     // **✅ Add 1 extra page for error state**
     val pagerState = rememberPagerState(
         pageCount = { newsResponse.articles.size + if (errorState != null) 1 else 0 }
@@ -100,7 +100,9 @@ fun MainScreen(viewModel: NewsViewModel) {
                                     NewsItem(newsResponse.articles[page], pagerState)
                                 } else if (errorState != null) {
                                     // **✅ Display error as last item**
-                                    ErrorScreen(errorState!!) { viewModel.fetchNews() }
+                                    ErrorScreen(errorState!!) {
+                                        viewModel.fetchNews()
+                                    }
                                 }
                             }
                         }

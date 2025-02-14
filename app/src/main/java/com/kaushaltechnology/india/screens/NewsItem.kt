@@ -1,31 +1,35 @@
 package com.kaushaltechnology.india.screens
 
-import android.app.Activity
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kaushaltechnology.india.Utils
 import com.kaushaltechnology.india.dao.gnews.Article
-import com.kaushaltechnology.india.utils.TimeUtils
+import com.kaushaltechnology.india.utils.Utils
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NewsItem(article: Article, pagerState: PagerState) {
-    val context = LocalContext.current
-    val activity = context as? Activity
+
+
 
 
     Box(
@@ -48,31 +52,10 @@ fun NewsItem(article: Article, pagerState: PagerState) {
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .height(20.dp), // Ensure the box has enough height
-                        contentAlignment = Alignment.BottomEnd
-                    ) {
-                        IconButton(
-                            onClick = {
-                                if (activity != null) {
-
-                                }
-                            },
-                            modifier = Modifier.size(48.dp) // Increase size to make it visible
-                        ) {
-                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Share",tint = Color.White )
-                        }
-                    }
-
-
                 }
             }
 
-            Box(modifier = Modifier.fillMaxWidth().weight(0.5f).padding(16.dp), contentAlignment = Alignment.TopCenter) {
+            Box(modifier = Modifier.fillMaxWidth().weight(0.4f).padding(16.dp), contentAlignment = Alignment.TopCenter) {
                 Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
                         text = "${article.id} ${Utils.replaceSpecialChar(article.title)}",
@@ -95,8 +78,7 @@ fun NewsItem(article: Article, pagerState: PagerState) {
 
             Box(modifier = Modifier.fillMaxWidth().weight(0.2f), contentAlignment = Alignment.TopCenter) {
                 SourceAndTimeView(
-                    source = article.source.name,
-                    time = TimeUtils.formatDateTime(article.publishedAt),
+                     article,
                     pagerState
                 )
             }

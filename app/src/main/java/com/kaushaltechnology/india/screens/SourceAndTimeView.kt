@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,19 +33,23 @@ import androidx.compose.ui.unit.sp
 import com.kaushaltechnology.india.dao.gnews.Article
 import com.kaushaltechnology.india.utils.TimeUtils
 import com.kaushaltechnology.india.utils.Utils
+import com.kaushaltechnology.india.viewmodel.NewsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SourceAndTimeView(article: Article, pagerState: PagerState) {
+fun SourceAndTimeView(article: Article, pagerState: PagerState,viewModel: NewsViewModel) {
     var isButtonEnabled by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
     val source = article.source.name
     val time = TimeUtils.formatDateTime(article.publishedAt)
     val newsUrl = article.url
     val context = LocalContext.current
+
+    val selectedCategory by viewModel.selectedCategory.collectAsState()
+
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -71,6 +76,12 @@ fun SourceAndTimeView(article: Article, pagerState: PagerState) {
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray
+            )
+            CategoryDropdown(
+                selectedCategory = selectedCategory,
+                onCategorySelected = { newCategory ->
+                    viewModel.updateCategory(newCategory)
+                }
             )
         }
 
@@ -125,4 +136,12 @@ fun SourceAndTimeView(article: Article, pagerState: PagerState) {
 
         }
     }
+}
+
+
+
+
+
+fun fetchNewsForCategory(newCategory: String) {
+
 }

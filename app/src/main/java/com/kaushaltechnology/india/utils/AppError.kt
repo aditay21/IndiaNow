@@ -24,11 +24,11 @@ enum class AppError(val code: Int, val message: String) {
 
         fun getMessageFromCode(errorCode: Int): String {
             return when (errorCode) {
-                AppError.NO_INTERNET.code -> AppError.NO_INTERNET.message
-                AppError.NETWORK_ERROR.code -> AppError.NETWORK_ERROR.message
-                AppError.INVALID_ARGUMENT.code -> AppError.INVALID_ARGUMENT.message
-                AppError.SECURITY_ERROR.code -> AppError.SECURITY_ERROR.message
-                AppError.UNEXPECTED_ERROR.code -> AppError.UNEXPECTED_ERROR.message
+                NO_INTERNET.code -> NO_INTERNET.message
+                NETWORK_ERROR.code -> NETWORK_ERROR.message
+                INVALID_ARGUMENT.code -> INVALID_ARGUMENT.message
+                SECURITY_ERROR.code -> SECURITY_ERROR.message
+                UNEXPECTED_ERROR.code -> UNEXPECTED_ERROR.message
                 else -> "Unknown error occurred. Please try again."
             }
         }

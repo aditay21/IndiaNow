@@ -7,20 +7,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavHost
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.kaushaltechnology.india.screens.MainScreen
 import com.kaushaltechnology.india.screens.DisplaySettingsScreen
-import com.kaushaltechnology.india.screens.DrawerContent
+import com.kaushaltechnology.india.screens.MainScreen
 import com.kaushaltechnology.india.ui.theme.IndiaNowTheme
 import com.kaushaltechnology.india.viewmodel.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -36,7 +31,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 Scaffold(
-                ) { innerPadding ->
+                ) { innerPadding ->0
                     // Set up NavHost to manage navigation between screens
                     NavHost(
                         navController = navController,
@@ -46,7 +41,7 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             MainScreen(viewModel = newsViewModel,navController) // Your main screen
                         }
-                        composable("displaySettings") {
+                        composable("display_settings") {
                             DisplaySettingsScreen(navController = navController) // Display settings screen
                         }
                     }

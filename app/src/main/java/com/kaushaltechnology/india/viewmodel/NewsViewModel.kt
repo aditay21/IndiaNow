@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.kaushaltechnology.india.dao.gnews.Article
 import com.kaushaltechnology.india.dao.gnews.DisplayList
 import com.kaushaltechnology.india.repositiory.NewsRepository
+import com.kaushaltechnology.india.screens.fetchNewsForCategory
 import com.kaushaltechnology.india.utils.ApiError
 import com.kaushaltechnology.india.utils.AppError
 import com.kaushaltechnology.india.utils.NetworkHelper
@@ -37,6 +38,15 @@ class NewsViewModel @Inject constructor(
 
     private var _showShimmerEffect = MutableStateFlow(true)
     val showShimmerEffect: StateFlow<Boolean> = _showShimmerEffect
+
+
+    private val _selectedCategory = MutableStateFlow("General")
+    val selectedCategory: StateFlow<String> = _selectedCategory
+
+    fun updateCategory(category: String) {
+        _selectedCategory.value = category
+        fetchNewsForCategory(category)
+    }
 
     init {
         fetchNews()

@@ -120,7 +120,7 @@ fun MainScreen(viewModel: NewsViewModel,navController: NavController?) {
                                     if (page == 0) {
                                         viewModel.markArticleAsRead(newsResponse.articles[0])
                                     }
-                                    NewsItem(newsResponse.articles[page], pagerState)
+                                    NewsItem(newsResponse.articles[page], pagerState,viewModel)
                                 } else if (errorState != null) {
                                     // **✅ Display error as last item**
                                     ErrorScreen(errorState!!) {

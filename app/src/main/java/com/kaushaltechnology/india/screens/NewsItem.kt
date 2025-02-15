@@ -24,10 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaushaltechnology.india.dao.gnews.Article
 import com.kaushaltechnology.india.utils.Utils
+import com.kaushaltechnology.india.viewmodel.NewsViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NewsItem(article: Article, pagerState: PagerState) {
+fun NewsItem(article: Article, pagerState: PagerState,viewModel: NewsViewModel) {
 
 
 
@@ -79,7 +80,7 @@ fun NewsItem(article: Article, pagerState: PagerState) {
             Box(modifier = Modifier.fillMaxWidth().weight(0.2f), contentAlignment = Alignment.TopCenter) {
                 SourceAndTimeView(
                      article,
-                    pagerState
+                    pagerState,viewModel
                 )
             }
         }

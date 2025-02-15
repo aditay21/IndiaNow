@@ -142,6 +142,3 @@ fun SourceAndTimeView(article: Article, pagerState: PagerState,viewModel: NewsVi
 
 
 
-fun fetchNewsForCategory(newCategory: String) {
-
-}

@@ -44,7 +44,7 @@ fun DisplaySettingsScreen(navController: NavController) {
                 checked = syncTheme.value,
                 onCheckedChange = {
                     syncTheme.value = it
-                    savePreference(context, "SyncTheme", it) // Save preference as Boolean
+                   // savePreference(context, "SyncTheme", it) // Save preference as Boolean
                 }
             )
             Text(text = "Sync Theme with Mobile")
@@ -56,7 +56,7 @@ fun DisplaySettingsScreen(navController: NavController) {
                 checked = lightModeEnabled.value,
                 onCheckedChange = {
                     lightModeEnabled.value = it
-                    savePreference(context, "LightMode", it) // Save preference as Boolean
+                  //  savePreference(context, "LightMode", it) // Save preference as Boolean
                 }
             )
             Text(text = "Light Mode")

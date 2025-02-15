@@ -5,28 +5,32 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kaushaltechnology.india.dao.gnews.Article
 import com.kaushaltechnology.india.dao.gnews.DisplayList
-import com.kaushaltechnology.india.repositiory.NewsRepository
-import com.kaushaltechnology.india.screens.fetchNewsForCategory
-import com.kaushaltechnology.india.utils.ApiError
+import com.kaushaltechnology.india.repository.NewsRepository
 import com.kaushaltechnology.india.utils.AppError
 import com.kaushaltechnology.india.utils.NetworkHelper
+import com.kaushaltechnology.india.utils.PreferenceHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
 class NewsViewModel @Inject constructor(
     private val repository: NewsRepository,
-    private val networkHelper: NetworkHelper
+    private val networkHelper: NetworkHelper, private val preferenceHelper: PreferenceHelper
 ) : ViewModel() {
 
     var isLoading = false
+
+    private var _country = MutableStateFlow(preferenceHelper.getStringPreference("Country"))
+     val country: StateFlow<String> = _country.asStateFlow()
+
+
 
     private val _displayItemList = MutableStateFlow(
         DisplayList(status = "", totalResults = 0, articles = mutableListOf(), page = 0)
@@ -47,6 +51,10 @@ class NewsViewModel @Inject constructor(
         _selectedCategory.value = category
         fetchNewsForCategory(category)
     }
+    fun saveCountry(key:String,value:String) {
+        preferenceHelper.savePreference(key,value)
+        _country.value= value
+    }
 
     init {
         fetchNews()
@@ -63,7 +71,7 @@ class NewsViewModel @Inject constructor(
             }
             _errorStateFlow.value = null
 
-            repository.fetchNews().collect { result ->
+            repository.fetchNews(country.value).collect { result ->
                 result.onSuccess { newsResponse ->
                     _displayItemList.update { currentList ->
                         currentList.copy(
@@ -95,7 +103,7 @@ class NewsViewModel @Inject constructor(
         _errorStateFlow.value = null
         isLoading = true
         viewModelScope.launch {
-            repository.callNextPage(page).collect { result ->
+            repository.callNextPage(page,_selectedCategory.value,country.value).collect { result ->
                 result.onSuccess { newsResponse ->
                     _displayItemList.update { currentList ->
                         currentList.copy(
@@ -125,6 +133,42 @@ class NewsViewModel @Inject constructor(
 
     private fun handleError(exception: Throwable) {
         _errorStateFlow.value = AppError.getCodeFromException(exception)
+    }
+
+    private fun fetchNewsForCategory(newCategory: String) {
+
+        if (isLoading) {
+            return
+        }
+
+        if (!checkInternetConnection()) {
+            _errorStateFlow.value = AppError.NO_INTERNET.code
+            return
+        }
+        repository.resetPage()
+        _showShimmerEffect.value = true
+        _errorStateFlow.value = null
+        isLoading = true
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.callNextPage(page =1 , newCategory,country.value).collect { result ->
+                result.onSuccess { newsResponse ->
+                    _displayItemList.value.articles.clear()
+                    _displayItemList.update { currentList ->
+                        currentList.copy(
+                            status = newsResponse.status,
+                            totalResults = newsResponse.totalResults,
+                            articles = (newsResponse.articles).toMutableList(),
+                            page = newsResponse.page
+                        )
+                    }
+                }.onFailure { exception ->
+                    handleError(exception)
+                }
+            }
+            isLoading = false
+            _showShimmerEffect.value = false
+        }
+
     }
 }
 

@@ -1,11 +1,14 @@
-package com.kaushaltechnology.india.repositiory
+package com.kaushaltechnology.india.repository
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import com.kaushaltechnology.india.dao.gnews.Article
 import com.kaushaltechnology.india.dao.gnews.NewsResponse
 import com.kaushaltechnology.india.network.NewsApiService
 import com.kaushaltechnology.india.room.NewsDao
 import com.kaushaltechnology.india.utils.ApiError
+import com.kaushaltechnology.india.utils.PreferenceHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -14,78 +17,46 @@ import javax.inject.Singleton
 @Singleton
 class NewsRepository @Inject constructor(
     private val apiService: NewsApiService,
-    private val newsDao: NewsDao
+    private val newsDao: NewsDao,
+    private val sharedPreferences: PreferenceHelper
 ) {
     private var mPage = 1
 
     companion object {
-        private const val API_KEY = "f682c1e6044246d6f2c5eef3ec5bc83c"
+        private const val API_KEY = "f682c1e6044246d6f2c5eef3ec5bc83c" // Move this to local.properties
         private const val CATEGORY = "general"
         private const val COUNTRY = "in"
         private const val LANGUAGE = "en"
         private const val MAX_RESULTS = 25
     }
 
-    // Fetch News from either the local database or the API
-    fun fetchNews(): Flow<Result<NewsResponse>> = flow {
+    fun fetchNews(country :String): Flow<Result<NewsResponse>> = flow {
         try {
-            val pendingNews = newsDao.getDisplayArticls()
-            if (pendingNews.size >= 2) {
-                emit(Result.success(NewsResponse("", 0, pendingNews, mPage)))
-            } else {
-                val response = apiService.getTopHeadlines(
-                    category = CATEGORY,
-                    apiKey = API_KEY,
-                    country = COUNTRY,
-                    language = LANGUAGE,
-                    max = MAX_RESULTS,
-                    page = mPage
-                )
-
-                if (response.isSuccessful) {
-                    mPage += 1
-                    response.body()?.articles?.let { articles ->
-                        val formattedArticles = articles.map { article ->
-                            article.copy(publishedAt = article.getFormattedPublishedAt())
-                        }
-                        insertUniqueArticles(formattedArticles)
-                    }
-                    emit(Result.success(NewsResponse("", 0, newsDao.getDisplayArticls(), mPage)))
-                } else {
-                    emit(Result.failure(Exception(handleApiError(response.code()))))
-                }
-            }
-        } catch (e: Exception) {
-            emit(Result.failure(Exception("Network error: ${e.localizedMessage}")))
-        }
-    }
-
-    // Fetch next page of news
-    fun callNextPage(page: Int): Flow<Result<NewsResponse>> = flow {
-        try {
-            if (page < mPage) {
-                Log.e("TAG", "Skipping API call, already fetched page $page")
+            val cachedNews = newsDao.getDisplayArticls()
+            if (cachedNews.size >= 2) {
+                emit(Result.success(NewsResponse("", 0, cachedNews, mPage)))
                 return@flow
             }
 
             val response = apiService.getTopHeadlines(
                 category = CATEGORY,
                 apiKey = API_KEY,
-                country = COUNTRY,
+                country = country,
                 language = LANGUAGE,
                 max = MAX_RESULTS,
-                page = page
+                page = mPage
             )
 
             if (response.isSuccessful) {
-                mPage = page + 1
                 response.body()?.articles?.let { articles ->
-                    val formattedArticles = articles.map { article ->
-                        article.copy(publishedAt = article.getFormattedPublishedAt())
+                    if (articles.isNotEmpty()) {
+                        val formattedArticles = articles.map { it.copy(publishedAt = it.getFormattedPublishedAt()) }
+                        insertUniqueArticles(formattedArticles)
+                        mPage++  // Increment the page only after success
                     }
-                    insertUniqueArticles(formattedArticles)
                 }
-                emit(Result.success(NewsResponse("", 0, newsDao.getDisplayArticls(), mPage)))
+                val updatedArticles = newsDao.getDisplayArticls()
+                emit(Result.success(NewsResponse("", 0, updatedArticles, mPage)))
             } else {
                 emit(Result.failure(Exception(handleApiError(response.code()))))
             }
@@ -94,26 +65,53 @@ class NewsRepository @Inject constructor(
         }
     }
 
-    // Mark an article as read
+    fun callNextPage(page: Int, category: String,country: String): Flow<Result<NewsResponse>> = flow {
+        try {
+            if (page < mPage) {
+                Log.e("TAG", "Skipping API call, already fetched page $page")
+                return@flow
+            }
+
+            val response = apiService.getTopHeadlines(
+                category = category,
+                apiKey = API_KEY,
+                country =country,
+                language = LANGUAGE,
+                max = MAX_RESULTS,
+                page = page
+            )
+
+            if (response.isSuccessful) {
+                response.body()?.articles?.let { articles ->
+                    if (articles.isNotEmpty()) {
+                        val formattedArticles = articles.map { it.copy(publishedAt = it.getFormattedPublishedAt()) }
+                        insertUniqueArticles(formattedArticles)
+                        mPage = page + 1  // Update page after success
+                    }
+                }
+                val updatedArticles = newsDao.getDisplayArticls()
+                emit(Result.success(NewsResponse("", 0, updatedArticles, mPage)))
+            } else {
+                emit(Result.failure(Exception(handleApiError(response.code()))))
+            }
+        } catch (e: Exception) {
+            emit(Result.failure(Exception("Network error: ${e.localizedMessage}")))
+        }
+    }
+
     suspend fun markArticleAsRead(article: Article) {
         newsDao.updateReadStatus(article.id, true)
     }
 
-    // Function to insert unique articles
     private suspend fun insertUniqueArticles(formattedArticles: List<Article>) {
-        /*val uniqueArticles = formattedArticles.filter { article ->
-            val existingArticle = article.urlToImage?.let { newsDao.getArticleByImageUrl(it) }
-            existingArticle == null
-        }*/
-        newsDao.insertAll(formattedArticles)
+        newsDao.insertAll(formattedArticles) // No need for extra filtering, let DB handle uniqueness
     }
 
-    // Handle API errors
-// Handle API errors using ApiError enum
     private fun handleApiError(code: Int): String {
-        val apiError = ApiError.fromCode(code)
-        return apiError.message
+        return ApiError.fromCode(code).message
+    }
+
+    fun resetPage() {
+        mPage = 1
     }
 }
-
-

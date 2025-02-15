@@ -12,26 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kaushaltechnology.india.utils.PreferenceHelper
+import com.kaushaltechnology.india.viewmodel.NewsViewModel
 
-// Helper function to save preferences in SharedPreferences
-fun savePreference(context: Context, key: String, value: Boolean) {
-    val sharedPreferences: SharedPreferences = context.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE)
-    sharedPreferences.edit().putBoolean(key, value).apply()
-}
-
-fun savePreference(context: Context, key: String, value: String) {
-    val sharedPreferences: SharedPreferences = context.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE)
-    sharedPreferences.edit().putString(key, value).apply()
-}
 
 @Composable
-fun DrawerContent(navController: NavController?, onItemClick: (String) -> Unit) {
+fun DrawerContent(viewModel: NewsViewModel, navController: NavController?, onItemClick: (String) -> Unit) {
+
+    val selectedCountry by viewModel.country.collectAsState()
     val context = LocalContext.current
-    val sharedPreferences: SharedPreferences = context.getSharedPreferences("UserPreferences", Context.MODE_PRIVATE)
-
-
-    val selectedCountry = remember { mutableStateOf(sharedPreferences.getString("Country", "India") ?: "India") }
-    val selectedLanguage = remember { mutableStateOf(sharedPreferences.getString("Language", "English") ?: "English") }
 
     val scrollState = rememberScrollState()
 
@@ -54,10 +43,9 @@ fun DrawerContent(navController: NavController?, onItemClick: (String) -> Unit) 
         listOf("India", "International").forEach { country ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = selectedCountry.value == country,
+                    selected = selectedCountry == country,
                     onClick = {
-                        selectedCountry.value = country
-                        savePreference(context, "Country", country)
+                        viewModel.saveCountry("Country",country)
                     }
                 )
                 Text(text = country, modifier = Modifier.padding(start = 4.dp))

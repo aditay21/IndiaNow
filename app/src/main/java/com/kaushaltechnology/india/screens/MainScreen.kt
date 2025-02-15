@@ -77,7 +77,7 @@ fun MainScreen(viewModel: NewsViewModel,navController: NavController?) {
                     .background(Color.White)
                     .padding(16.dp)
             ) {
-                DrawerContent(navController = navController) {
+                DrawerContent(viewModel,navController = navController) {
                     scope.launch {
                         drawerState.close()
                     }

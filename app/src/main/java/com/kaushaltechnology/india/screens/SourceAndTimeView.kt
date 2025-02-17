@@ -56,9 +56,6 @@ fun SourceAndTimeView(article: Article, pagerState: PagerState,viewModel: NewsVi
                 NoInterNetScreen()
             }
         }
-
-
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween

@@ -50,98 +50,106 @@ fun SourceAndTimeView(article: Article, pagerState: PagerState,viewModel: NewsVi
     val isNetworkAvailable by viewModel.isNetworkAvailable.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
 
-
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-
+    Column {
         if (!isNetworkAvailable) {
             Column {
                 NoInterNetScreen()
             }
         }
-        // Left side: Source and Time Text
-        Column(
-            modifier = Modifier
-                .padding(16.dp, 1.dp, 16.dp, 16.dp)
-                .weight(6f),  // Takes available space on the left
-            verticalArrangement = Arrangement.Top
+
+
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "Source: $source",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
 
-            Spacer(modifier = Modifier.height(1.dp)) // Space between Source and Time
 
-            Text(
-                text = "Time: $time",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                color = Color.Gray
-            )
-            CategoryDropdown(
-                selectedCategory = selectedCategory,
-                onCategorySelected = { newCategory ->
-                    viewModel.updateCategory(newCategory.lowercase())
-                }
-            )
-
-        }
-
-        // Right side: Next button
-        Column(
-            modifier = Modifier
-                .padding(6.dp, 1.dp, 16.dp, 4.dp)
-                .weight(1f), // Adjusting this to allow space for the button
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            IconButton(onClick = {
-                if (isButtonEnabled) {
-                    isButtonEnabled = false
-                    Utils.shareTheAPPAndNews(newsUrl, context)
-                }
-                coroutineScope.launch {
-                    delay(1000) // 1 second delay
-                    isButtonEnabled = true // Re-enable button
-                }
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Share,
-                    contentDescription = "Share",
-                    tint = if (isButtonEnabled) Color.Black else Color.Gray // Show disabled state
+            // Left side: Source and Time Text
+            Column(
+                modifier = Modifier
+                    .padding(16.dp, 1.dp, 16.dp, 16.dp)
+                    .weight(6f),  // Takes available space on the left
+                verticalArrangement = Arrangement.Top
+            ) {
+                Text(
+                    text = "Source: $source",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
+
+                Spacer(modifier = Modifier.height(1.dp)) // Space between Source and Time
+
+                Text(
+                    text = "Time: $time",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Gray
+                )
+                CategoryDropdown(
+                    selectedCategory = selectedCategory,
+                    onCategorySelected = { newCategory ->
+                        viewModel.updateCategory(newCategory.lowercase())
+                    }
+                )
+
             }
 
-        }
-        Column(
-            modifier = Modifier
-                .padding(4.dp, 1.dp, 16.dp, 16.dp)
-                .weight(1f), // Adjusting this to allow space for the button
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            IconButton(onClick = {
-                coroutineScope.launch {
+            // Right side: Next button
+            Column(
+                modifier = Modifier
+                    .padding(6.dp, 1.dp, 16.dp, 4.dp)
+                    .weight(1f), // Adjusting this to allow space for the button
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                IconButton(onClick = {
                     if (isButtonEnabled) {
                         isButtonEnabled = false
-                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        Utils.shareTheAPPAndNews(newsUrl, context)
                     }
+                    coroutineScope.launch {
+                        delay(1000) // 1 second delay
+                        isButtonEnabled = true // Re-enable button
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.Share,
+                        contentDescription = "Share",
+                        tint = if (isButtonEnabled) Color.Black else Color.Gray // Show disabled state
+                    )
                 }
 
-                coroutineScope.launch {
-                    delay(500) // 1 second delay
-                    isButtonEnabled = true // Re-enable button
-                }
-            }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next Page", tint = if (isButtonEnabled) Color.Black else Color.Gray )
             }
+            Column(
+                modifier = Modifier
+                    .padding(4.dp, 1.dp, 16.dp, 16.dp)
+                    .weight(1f), // Adjusting this to allow space for the button
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        if (isButtonEnabled) {
+                            isButtonEnabled = false
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        }
+                    }
 
+                    coroutineScope.launch {
+                        delay(500) // 1 second delay
+                        isButtonEnabled = true // Re-enable button
+                    }
+                }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Next Page",
+                        tint = if (isButtonEnabled) Color.Black else Color.Gray
+                    )
+                }
+
+            }
         }
     }
 }

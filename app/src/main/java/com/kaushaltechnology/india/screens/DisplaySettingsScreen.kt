@@ -7,7 +7,10 @@ import android.content.SharedPreferences
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.*
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +26,7 @@ fun saveDisplayPreference(context: Context, key: String, value: Boolean) {
 
 @Composable
 fun DisplaySettingsScreen(navController: NavController) {
-    val context = LocalContext.current
+
 
     val syncTheme = remember { mutableStateOf(false) }
     val lightModeEnabled = remember { mutableStateOf(false) }
@@ -35,7 +38,7 @@ fun DisplaySettingsScreen(navController: NavController) {
             .padding(16.dp)
             .verticalScroll(scrollState) // Make content scrollable
     ) {
-        Text("Display Settings", style = MaterialTheme.typography.h6)
+        Text("Display Settings", style = MaterialTheme.typography.displaySmall)
         Spacer(modifier = Modifier.height(8.dp))
 
         // Sync Theme with Mobile

@@ -42,6 +42,7 @@ fun MainScreen(viewModel: NewsViewModel,navController: NavController?) {
     val showShimmerEffect by viewModel.showShimmerEffect.collectAsState()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val resetPagerState by viewModel.resetPagerStateFlow.collectAsState()
 
 
     // **✅ Add 1 extra page for error state**
@@ -52,9 +53,17 @@ fun MainScreen(viewModel: NewsViewModel,navController: NavController?) {
 
     // Handle internet check before attempting to fetch news
 
-
+    LaunchedEffect(resetPagerState) {
+        if (resetPagerState) {
+            pagerState.scrollToPage(0) // Reset the pager to the first page
+            viewModel.resetPagerFlag() // Optionally reset the flag after the reset
+        }
+    }
     // **✅ Observe page change and update read status**
     LaunchedEffect(pagerState.currentPage) {
+
+
+
         newsResponse.articles.getOrNull(pagerState.currentPage)?.let { article ->
             if (!article.read) {
                 viewModel.markArticleAsRead(article)

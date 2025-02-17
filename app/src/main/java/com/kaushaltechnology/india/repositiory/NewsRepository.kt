@@ -32,7 +32,7 @@ class NewsRepository @Inject constructor(
 
     fun fetchNews(country :String): Flow<Result<NewsResponse>> = flow {
         try {
-            val cachedNews = newsDao.getDisplayArticls()
+            val cachedNews = newsDao.getDisplayArticls(CATEGORY)
             if (cachedNews.size >= 2) {
                 emit(Result.success(NewsResponse("", 0, cachedNews, mPage)))
                 return@flow
@@ -50,12 +50,15 @@ class NewsRepository @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.articles?.let { articles ->
                     if (articles.isNotEmpty()) {
-                        val formattedArticles = articles.map { it.copy(publishedAt = it.getFormattedPublishedAt()) }
+                        val formattedArticles = articles.map {
+                            it.copy(publishedAt = it.getFormattedPublishedAt(), category =  CATEGORY)
+
+                        }
                         insertUniqueArticles(formattedArticles)
                         mPage++  // Increment the page only after success
                     }
                 }
-                val updatedArticles = newsDao.getDisplayArticls()
+                val updatedArticles = newsDao.getDisplayArticls(CATEGORY)
                 emit(Result.success(NewsResponse("", 0, updatedArticles, mPage)))
             } else {
                 emit(Result.failure(Exception(handleApiError(response.code()))))
@@ -84,12 +87,15 @@ class NewsRepository @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.articles?.let { articles ->
                     if (articles.isNotEmpty()) {
-                        val formattedArticles = articles.map { it.copy(publishedAt = it.getFormattedPublishedAt()) }
+                        val formattedArticles = articles.map {
+                            it.copy(publishedAt = it.getFormattedPublishedAt(),category =  category) }
                         insertUniqueArticles(formattedArticles)
                         mPage = page + 1  // Update page after success
                     }
                 }
-                val updatedArticles = newsDao.getDisplayArticls()
+                val updatedArticles = newsDao.getDisplayArticls(category)
+
+
                 emit(Result.success(NewsResponse("", 0, updatedArticles, mPage)))
             } else {
                 emit(Result.failure(Exception(handleApiError(response.code()))))

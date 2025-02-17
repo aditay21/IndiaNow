@@ -30,6 +30,8 @@ class NewsViewModel @Inject constructor(
     private var _country = MutableStateFlow(preferenceHelper.getStringPreference("Country"))
      val country: StateFlow<String> = _country.asStateFlow()
 
+    private val _resetPagerStateFlow = MutableStateFlow(false) // Track if pager should reset
+    val resetPagerStateFlow: StateFlow<Boolean> = _resetPagerStateFlow
 
 
     private val _displayItemList = MutableStateFlow(
@@ -42,7 +44,6 @@ class NewsViewModel @Inject constructor(
 
     private var _showShimmerEffect = MutableStateFlow(true)
     val showShimmerEffect: StateFlow<Boolean> = _showShimmerEffect
-
 
     private val _selectedCategory = MutableStateFlow("General")
     val selectedCategory: StateFlow<String> = _selectedCategory
@@ -140,8 +141,8 @@ class NewsViewModel @Inject constructor(
         if (isLoading) {
             return
         }
-
         if (!checkInternetConnection()) {
+
             _errorStateFlow.value = AppError.NO_INTERNET.code
             return
         }
@@ -161,6 +162,7 @@ class NewsViewModel @Inject constructor(
                             page = newsResponse.page
                         )
                     }
+                    _resetPagerStateFlow.value = true
                 }.onFailure { exception ->
                     handleError(exception)
                 }
@@ -169,6 +171,9 @@ class NewsViewModel @Inject constructor(
             _showShimmerEffect.value = false
         }
 
+    }
+    fun resetPagerFlag() {
+        _resetPagerStateFlow.value = false
     }
 }
 

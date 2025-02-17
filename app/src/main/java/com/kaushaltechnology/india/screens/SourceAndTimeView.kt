@@ -80,7 +80,7 @@ fun SourceAndTimeView(article: Article, pagerState: PagerState,viewModel: NewsVi
             CategoryDropdown(
                 selectedCategory = selectedCategory,
                 onCategorySelected = { newCategory ->
-                    viewModel.updateCategory(newCategory)
+                    viewModel.updateCategory(newCategory.lowercase())
                 }
             )
         }

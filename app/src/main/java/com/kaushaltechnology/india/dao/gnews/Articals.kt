@@ -20,7 +20,8 @@ data class Article(
     @SerializedName("image") @ColumnInfo(name = "url_to_image") val urlToImage: String?,
     @SerializedName("publishedAt") @ColumnInfo(name = "published_at") val publishedAt: String,
     @Embedded val source: Source,
-    @ColumnInfo(name = "read") val read: Boolean = false
+    @ColumnInfo(name = "read") val read: Boolean = false,
+    @ColumnInfo(name = "category") val category: String = "General"
 ){
     fun getFormattedPublishedAt(): String {
         return try {

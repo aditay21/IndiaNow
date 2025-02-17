@@ -28,10 +28,11 @@ interface NewsDao {
     SELECT DISTINCT * FROM news 
     WHERE read = 0  -- Fetch only unread news
     AND published_at >= datetime('now', '-1 days')  -- Exclude news older than 1 day
-    ORDER BY published_at DESC
-"""
+    AND category = :selectedCategory  -- Only fetch selected category
+    ORDER BY published_at DESC  -- Sort by latest news
+    """
     )
-    suspend fun getDisplayArticls(): List<Article> // Fetch unread news sorted by published date
+    suspend fun getDisplayArticls(selectedCategory: String): List<Article> // Fetch unread news sorted by published date
 
 
     @Query("UPDATE news SET read = :isRead WHERE id = :articleId")

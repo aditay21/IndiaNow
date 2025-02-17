@@ -83,6 +83,7 @@ fun NewsItem(article: Article, pagerState: PagerState,viewModel: NewsViewModel) 
                     pagerState,viewModel
                 )
             }
+
         }
     }
 }

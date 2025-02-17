@@ -1,7 +1,5 @@
 package com.kaushaltechnology.india.repository
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import com.kaushaltechnology.india.dao.gnews.Article
 import com.kaushaltechnology.india.dao.gnews.NewsResponse
@@ -30,9 +28,14 @@ class NewsRepository @Inject constructor(
         private const val MAX_RESULTS = 25
     }
 
+    fun fetchOfflineData(): Flow<Result<NewsResponse>> = flow{
+        val cachedNews = newsDao.getAllArticalsInNoInternet()
+              emit(Result.success(NewsResponse("", 0, cachedNews, mPage)))
+    }
+
     fun fetchNews(country :String): Flow<Result<NewsResponse>> = flow {
         try {
-            val cachedNews = newsDao.getDisplayArticls(CATEGORY)
+            val cachedNews = newsDao.getDisplayArticles(CATEGORY)
             if (cachedNews.size >= 2) {
                 emit(Result.success(NewsResponse("", 0, cachedNews, mPage)))
                 return@flow
@@ -58,7 +61,7 @@ class NewsRepository @Inject constructor(
                         mPage++  // Increment the page only after success
                     }
                 }
-                val updatedArticles = newsDao.getDisplayArticls(CATEGORY)
+                val updatedArticles = newsDao.getDisplayArticles(CATEGORY)
                 emit(Result.success(NewsResponse("", 0, updatedArticles, mPage)))
             } else {
                 emit(Result.failure(Exception(handleApiError(response.code()))))
@@ -93,7 +96,7 @@ class NewsRepository @Inject constructor(
                         mPage = page + 1  // Update page after success
                     }
                 }
-                val updatedArticles = newsDao.getDisplayArticls(category)
+                val updatedArticles = newsDao.getDisplayArticles(category)
 
 
                 emit(Result.success(NewsResponse("", 0, updatedArticles, mPage)))

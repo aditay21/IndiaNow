@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(viewModel: NewsViewModel,navController: NavController?) {
+
     val newsResponse by viewModel.newsStateFlow.collectAsState()
     val errorState by viewModel.errorStateFlow.collectAsState()
     val showShimmerEffect by viewModel.showShimmerEffect.collectAsState()

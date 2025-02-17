@@ -47,14 +47,21 @@ fun SourceAndTimeView(article: Article, pagerState: PagerState,viewModel: NewsVi
     val time = TimeUtils.formatDateTime(article.publishedAt)
     val newsUrl = article.url
     val context = LocalContext.current
-
+    val isNetworkAvailable by viewModel.isNetworkAvailable.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
+
 
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+
+        if (!isNetworkAvailable) {
+            Column {
+                NoInterNetScreen()
+            }
+        }
         // Left side: Source and Time Text
         Column(
             modifier = Modifier
@@ -83,6 +90,7 @@ fun SourceAndTimeView(article: Article, pagerState: PagerState,viewModel: NewsVi
                     viewModel.updateCategory(newCategory.lowercase())
                 }
             )
+
         }
 
         // Right side: Next button

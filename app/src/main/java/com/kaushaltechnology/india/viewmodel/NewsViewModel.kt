@@ -11,6 +11,7 @@ import com.kaushaltechnology.india.utils.NetworkHelper
 import com.kaushaltechnology.india.utils.PreferenceHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,6 +53,8 @@ class NewsViewModel @Inject constructor(
         _selectedCategory.value = category
         fetchNewsForCategory(category)
     }
+    private var _isNetworkAvailable = MutableStateFlow(true) // Assume network is available initially
+    val isNetworkAvailable: StateFlow<Boolean> = _isNetworkAvailable
     fun saveCountry(key:String,value:String) {
         preferenceHelper.savePreference(key,value)
         _country.value= value
@@ -59,6 +62,7 @@ class NewsViewModel @Inject constructor(
 
     init {
         fetchNews()
+        observeNetworkStatus()
     }
 
     fun fetchNews() {
@@ -97,8 +101,25 @@ class NewsViewModel @Inject constructor(
         }
 
         if (!checkInternetConnection()) {
-            _errorStateFlow.value = AppError.NO_INTERNET.code
-            return
+            viewModelScope.launch {
+                repository.fetchOfflineData().collect { result ->
+                    result.onSuccess { newsResponse ->
+                        _displayItemList.update { currentList ->
+                            currentList.copy(
+                                status = newsResponse.status,
+                                totalResults = newsResponse.totalResults,
+                                articles = (currentList.articles + newsResponse.articles).toMutableList(),
+                                page = newsResponse.page
+                            )
+                        }
+                    }.onFailure { exception ->
+                        handleError(exception)
+                    }
+
+                }
+                _errorStateFlow.value = AppError.NO_INTERNET.code
+                return@launch
+            }
         }
 
         _errorStateFlow.value = null
@@ -142,9 +163,25 @@ class NewsViewModel @Inject constructor(
             return
         }
         if (!checkInternetConnection()) {
+            viewModelScope.launch {
+                repository.fetchOfflineData().collect { result ->
+                    result.onSuccess { newsResponse ->
+                        _displayItemList.update { currentList ->
+                            currentList.copy(
+                                status = newsResponse.status,
+                                totalResults = newsResponse.totalResults,
+                                articles = (currentList.articles + newsResponse.articles).toMutableList(),
+                                page = newsResponse.page
+                            )
+                        }
+                    }.onFailure { exception ->
+                        handleError(exception)
+                    }
 
-            _errorStateFlow.value = AppError.NO_INTERNET.code
-            return
+                }
+                _errorStateFlow.value = AppError.NO_INTERNET.code
+                return@launch
+            }
         }
         repository.resetPage()
         _showShimmerEffect.value = true
@@ -175,6 +212,18 @@ class NewsViewModel @Inject constructor(
     fun resetPagerFlag() {
         _resetPagerStateFlow.value = false
     }
+
+
+    private fun observeNetworkStatus() {
+        // Observe network status using NetworkHelper
+        viewModelScope.launch {
+            networkHelper.observeNetworkStatus().collect { status ->
+                Log.e("TAG"," View Model Internet -Status :- $status")
+                _isNetworkAvailable.value = status // Update network availability
+            }
+        }
+    }
+
 }
 
 

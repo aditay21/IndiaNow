@@ -32,7 +32,17 @@ interface NewsDao {
     ORDER BY published_at DESC  -- Sort by latest news
     """
     )
-    suspend fun getDisplayArticls(selectedCategory: String): List<Article> // Fetch unread news sorted by published date
+    suspend fun getDisplayArticles(selectedCategory: String): List<Article> // Fetch unread news sorted by published date
+
+    @Query(
+        """
+    SELECT DISTINCT * FROM news 
+    WHERE read = 0  -- Fetch only unread news
+      -- Exclude news older than 1 day
+    ORDER BY published_at DESC  -- Sort by latest news
+    """
+    )
+    suspend fun getAllArticalsInNoInternet(): List<Article> // Fetch unread news sorted by published date
 
 
     @Query("UPDATE news SET read = :isRead WHERE id = :articleId")
